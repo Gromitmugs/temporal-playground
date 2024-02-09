@@ -8,5 +8,6 @@ type Query {
 }
 
 type Mutation {
-  newMessage: Message!
+  newMessage(content: String!): Message!
+  produceError: String
 }
