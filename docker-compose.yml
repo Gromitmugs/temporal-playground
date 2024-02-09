@@ -58,8 +58,8 @@ services:
     depends_on:
       - temporal
     environment:
-      - TEMPORAL_ADDRESS=temporal:7233 # used by temporal
-      - TEMPORAL_CLI_ADDRESS=temporal:7233 # used by tctl
+      - TEMPORAL_ADDRESS=temporal:7233
+      - TEMPORAL_CLI_ADDRESS=temporal:7233
     image: temporalio/admin-tools:${TEMPORAL_VERSION}
     networks:
       - temporal-network
@@ -76,7 +76,7 @@ services:
     networks:
       - temporal-network
     ports:
-      - 8088:8080
+      - 8080:8080
 networks:
   temporal-network:
     driver: bridge

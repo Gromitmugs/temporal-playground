@@ -16,8 +16,8 @@ func GetTemporalClient() (client.Client, error) {
 	return c, nil
 }
 
-func RegisterWorkflowAndActivity(c *client.Client, workflow interface{}, activities ...interface{}) {
-	w := worker.New(*c, "hello-world", worker.Options{})
+func RegisterWorkflowAndActivity(c *client.Client, name string, workflow interface{}, activities ...interface{}) {
+	w := worker.New(*c, name, worker.Options{})
 	w.RegisterWorkflow(workflow)
 	for _, activity := range activities {
 		w.RegisterActivity(activity)
@@ -25,5 +25,11 @@ func RegisterWorkflowAndActivity(c *client.Client, workflow interface{}, activit
 	err := w.Run(worker.InterruptCh())
 	if err != nil {
 		log.Fatalln("Unable to start worker", err)
+	}
+}
+
+func HandleErr(err error) {
+	if err != nil {
+		panic(err)
 	}
 }

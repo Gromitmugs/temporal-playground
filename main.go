@@ -15,5 +15,5 @@ func main() {
 	}
 	defer client.Close()
 
-	service.RegisterWorkflowAndActivity(&client, broadcast.Workflow, broadcast.Activity)
+	service.RegisterWorkflowAndActivity(&client, "Broadcast", broadcast.Workflow, broadcast.BroadcastActivity)
 }
