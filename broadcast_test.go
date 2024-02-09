@@ -12,17 +12,6 @@ import (
 	temporalclient "go.temporal.io/sdk/client"
 )
 
-func TestBroadcastWorker(t *testing.T) {
-	client, err := service.GetTemporalClient()
-	if err != nil {
-		fmt.Println(err)
-		t.FailNow()
-	}
-	defer client.Close()
-
-	service.StartWorkflow(&client, broadcast.Workflow, broadcast.Activity)
-}
-
 func TestBroadCastStarter(t *testing.T) {
 	client, err := service.GetTemporalClient()
 	if err != nil {
@@ -36,7 +25,7 @@ func TestBroadCastStarter(t *testing.T) {
 		TaskQueue: "TaskQueueBroadcast",
 	}
 
-	workflowRun, err := client.ExecuteWorkflow(context.Background(), startOpt, broadcast.Workflow, "TestMsg1")
+	workflowRun, err := client.ExecuteWorkflow(context.Background(), startOpt, broadcast.Workflow, "TestMsg2")
 	if err != nil {
 		log.Fatalln("Unable to execute workflow", err)
 		return
