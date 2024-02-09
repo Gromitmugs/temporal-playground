@@ -1,0 +1,35 @@
+# -- Notice
+# All paths are relative to the caller.
+
+schema:
+  - ./graphql/*.graphql
+
+exec:
+  layout: follow-schema
+  package: gqlgen
+  dir: ./internal/graph/gqlgen
+
+model:
+  filename: ./internal/graph/gqlmodel/models_gen.go
+  package: gqlmodel
+
+resolver:
+  layout: follow-schema
+  dir: ./internal/controller/resolvers
+  package: resolvers
+
+skip_validation: true
+skip_mod_tidy: true
+
+models:
+  ID:
+    model:
+      - github.com/99designs/gqlgen/graphql.ID
+      - github.com/99designs/gqlgen/graphql.Int
+      - github.com/99designs/gqlgen/graphql.Int64
+      - github.com/99designs/gqlgen/graphql.Int32
+  Int:
+    model:
+      - github.com/99designs/gqlgen/graphql.Int
+      - github.com/99designs/gqlgen/graphql.Int64
+      - github.com/99designs/gqlgen/graphql.Int32
