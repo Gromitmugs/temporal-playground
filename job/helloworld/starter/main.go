@@ -12,7 +12,7 @@ import (
 
 func main() {
 	c, err := service.GetTemporalClient()
-	service.HandleErr(err)
+	service.PanicIfErr(err)
 	defer c.Close()
 
 	workflowOptions := client.StartWorkflowOptions{
@@ -21,11 +21,11 @@ func main() {
 	}
 
 	we, err := c.ExecuteWorkflow(context.Background(), workflowOptions, helloworld.Workflow, "Temporal")
-	service.HandleErr(err)
+	service.PanicIfErr(err)
 
 	// Synchronously wait for the workflow completion.
 	var result string
 	err = we.Get(context.Background(), &result)
-	service.HandleErr(err)
+	service.PanicIfErr(err)
 	log.Println("Workflow result:", result)
 }

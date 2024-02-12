@@ -6,7 +6,6 @@ import (
 	"go.temporal.io/sdk/workflow"
 )
 
-const TaskName string = "Broadcast"
 
 func Workflow(ctx workflow.Context, broadcastMsg string) (string, error) {
 	opt := workflow.ActivityOptions{

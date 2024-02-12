@@ -28,7 +28,7 @@ func RegisterWorkflowAndActivity(c *client.Client, name string, workflow interfa
 	}
 }
 
-func HandleErr(err error) {
+func PanicIfErr(err error) {
 	if err != nil {
 		panic(err)
 	}

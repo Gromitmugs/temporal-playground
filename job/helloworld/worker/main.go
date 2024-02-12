@@ -8,7 +8,7 @@ import (
 func main() {
 	// The client and worker are heavyweight objects that should be created once per process.
 	c, err := service.GetTemporalClient()
-	service.HandleErr(err)
+	service.PanicIfErr(err)
 	defer c.Close()
 
 	service.RegisterWorkflowAndActivity(&c, helloworld.TaskName, helloworld.Workflow, helloworld.Activity)
