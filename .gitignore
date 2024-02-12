@@ -1,2 +1,4 @@
 *.generated.go
 *gen.go
+*generated*
+./thirdparty/bin/*

@@ -7,6 +7,11 @@ import (
 	"go.temporal.io/sdk/worker"
 )
 
+type Workflow struct {
+	Definition interface{}
+	Activities []interface{}
+}
+
 func GetTemporalClient() (client.Client, error) {
 	c, err := client.Dial(client.Options{})
 	if err != nil {

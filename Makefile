@@ -18,6 +18,7 @@ export OPENSEARCH_VERSION=2.5.0
 
 .PHONY: up
 up:
+	make -C thirdparty docker-build
 	docker compose up
 
 .PHONY: helloworld-worker

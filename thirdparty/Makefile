@@ -1,5 +1,8 @@
 .PHONY: g generate
-g generate:
+g generate: gen-app gen-client
+
+.PHONY: gen-app
+gen-app:
 	gqlgen generate --config codegen/gqlgen.yml
 
 .PHONY: c clean
@@ -12,3 +15,10 @@ gen-client-schema:
 
 gen-client: gen-client-schema
 	cd client/codegen && genqlient
+
+APP_BIN := ./bin/message
+build: generate
+	go build -o ./bin/message
+
+docker-build: build
+	docker build -t message .
