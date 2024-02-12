@@ -12,6 +12,7 @@ var Workflow *service.Workflow = &service.Workflow{
 	Definition: BroadcastWorkflow,
 	Activities: []interface{}{
 		BroadcastMessage,
+		RecordMessage,
 	},
 }
 

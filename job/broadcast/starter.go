@@ -21,7 +21,7 @@ func Starter(message string) error {
 		TaskQueue: constant.TaskName,
 	}
 
-	workflowRun, err := client.ExecuteWorkflow(context.Background(), startOpt, Workflow, message)
+	workflowRun, err := client.ExecuteWorkflow(context.Background(), startOpt, Workflow.Definition, message)
 	if err != nil {
 		return err
 	}

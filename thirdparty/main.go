@@ -21,8 +21,8 @@ func main() {
 			DBLastIndex: 0,
 		},
 	}))
-	r.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	r.Handle("/query", srv)
+	r.Handle("/", playground.Handler("GraphQL playground", "/graphql"))
+	r.Handle("/graphql", srv)
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", defaultPort)
 	log.Fatal(http.ListenAndServe(":"+defaultPort, r))
