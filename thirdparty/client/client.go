@@ -48,7 +48,7 @@ func (c *Client) ErrorCreate(ctx context.Context, errMsg string) error {
 }
 
 const (
-	EndpointUrl string = "http//message:8001/graphql"
+	EndpointUrl string = "http://message:8001/graphql"
 )
 
 type authTransport struct {
