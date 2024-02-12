@@ -19,6 +19,7 @@ require (
 
 require (
 	github.com/99designs/gqlgen v0.17.43
+	github.com/Khan/genqlient v0.6.0
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
 	github.com/gogo/googleapis v1.4.1 // indirect

@@ -1,0 +1,9 @@
+# Default genqlient config; for full documentation see:
+# https://github.com/Khan/genqlient/blob/main/docs/genqlient.yaml
+schema: schema.graphql
+operations:
+- message.graphql
+
+generated: ../generated.go
+use_struct_references: false
+optional: pointer

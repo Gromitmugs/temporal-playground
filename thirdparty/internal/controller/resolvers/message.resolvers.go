@@ -12,8 +12,8 @@ import (
 	"github.com/Gromitmugs/temporal-playground/thirdparty/internal/graph/gqlmodel"
 )
 
-// NewMessage is the resolver for the newMessage field.
-func (r *mutationResolver) NewMessage(ctx context.Context, content string) (*gqlmodel.Message, error) {
+// MessageCreate is the resolver for the messageCreate field.
+func (r *mutationResolver) MessageCreate(ctx context.Context, content string) (*gqlmodel.Message, error) {
 	r.DBLastIndex += 1
 	r.DB[r.DBLastIndex] = content
 
@@ -23,8 +23,8 @@ func (r *mutationResolver) NewMessage(ctx context.Context, content string) (*gql
 	}, nil
 }
 
-// ProduceError is the resolver for the produceError field.
-func (r *mutationResolver) ProduceError(ctx context.Context, errMsg string) (string, error) {
+// ErrorCreate is the resolver for the errorCreate field.
+func (r *mutationResolver) ErrorCreate(ctx context.Context, errMsg string) (string, error) {
 	return "", fmt.Errorf("an error occured: %s", errMsg)
 }
 

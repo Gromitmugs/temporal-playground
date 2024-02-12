@@ -1,0 +1,7 @@
+version: "3"
+services:
+  message:
+    image: message
+    ports:
+      - 8001:8001
+    restart: always
