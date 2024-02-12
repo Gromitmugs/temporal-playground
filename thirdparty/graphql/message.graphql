@@ -9,5 +9,5 @@ type Query {
 
 type Mutation {
   newMessage(content: String!): Message!
-  produceError: String
+  produceError(errMsg: String!): String!
 }

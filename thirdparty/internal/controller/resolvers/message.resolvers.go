@@ -13,13 +13,31 @@ import (
 )
 
 // NewMessage is the resolver for the newMessage field.
-func (r *mutationResolver) NewMessage(ctx context.Context) (*gqlmodel.Message, error) {
-	panic(fmt.Errorf("not implemented: NewMessage - newMessage"))
+func (r *mutationResolver) NewMessage(ctx context.Context, content string) (*gqlmodel.Message, error) {
+	r.DBLastIndex += 1
+	r.DB[r.DBLastIndex] = content
+
+	return &gqlmodel.Message{
+		ID:      r.DBLastIndex,
+		Content: content,
+	}, nil
+}
+
+// ProduceError is the resolver for the produceError field.
+func (r *mutationResolver) ProduceError(ctx context.Context, errMsg string) (string, error) {
+	return "", fmt.Errorf("an error occured: %s", errMsg)
 }
 
 // Messages is the resolver for the messages field.
 func (r *queryResolver) Messages(ctx context.Context) ([]*gqlmodel.Message, error) {
-	panic(fmt.Errorf("not implemented: Messages - messages"))
+	result := []*gqlmodel.Message{}
+	for i := 0; i < r.DBLastIndex+1; i++ {
+		result = append(result, &gqlmodel.Message{
+			ID:      i,
+			Content: r.DB[i],
+		})
+	}
+	return result, nil
 }
 
 // Mutation returns gqlgen.MutationResolver implementation.
