@@ -17,8 +17,10 @@ gen-client: gen-client-schema
 	cd client/codegen && genqlient
 
 APP_BIN := ./bin/message
-build: generate
-	go build -o ./bin/message
 
-docker-build: build
+.PHONY: build
+build: $(APP_BIN)
+
+$(APP_BIN): $(shell find internal -type f)
+	go build -o $(APP_BIN)
 	docker build -t message .

@@ -1,8 +1,3 @@
-.PHONY: update-submodules
-update-submodules:
-	git submodule update --recursive --init
-
-
 ### Docker Compose ###
 export COMPOSE_PROJECT_NAME=temporal
 export CASSANDRA_VERSION=3.11.9
@@ -17,7 +12,9 @@ export POSTGRES_DEFAULT_PORT=5432
 export OPENSEARCH_VERSION=2.5.0
 
 .PHONY: up
-up: docker-build-worker docker-build-thirdparty
+up:
+	$(MAKE) build
+	$(MAKE) build-thirdparty
 	docker compose up
 
 .PHONY: helloworld-worker
@@ -35,11 +32,11 @@ broadcast-starter:
 
 APP_BIN := ./build/bin/worker
 .PHONY: build
-build:
-	go build -o $(APP_BIN)
 
-docker-build-worker: build
+build: $(APP_BIN)
+$(APP_BIN): $(shell find job -type f) $(shell find service -type f) $(shell find thirdparty/client -type f) go.mod go.sum main.go
+	go build -o $(APP_BIN)
 	docker build -t temporal-worker -f ./build/dockerfile/Dockerfile-worker .
 
-docker-build-thirdparty:
-	make -C thirdparty docker-build
+build-thirdparty:
+	make -C thirdparty build
