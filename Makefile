@@ -29,10 +29,6 @@ helloworld-worker:
 helloworld-starter:
 	go run job/helloworld/starter/main.go
 
-.PHONY: broadcast-worker
-broadcast-worker:
-	go run job/broadcast/worker/main.go
-
 .PHONY: broadcast-starter
 broadcast-starter:
-	go run job/broadcast/starter/main.go yes
+	go run main.go broadcast
