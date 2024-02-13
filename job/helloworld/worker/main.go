@@ -11,5 +11,5 @@ func main() {
 	service.PanicIfErr(err)
 	defer c.Close()
 
-	service.RegisterWorkflowAndActivity(&c, helloworld.TaskName, helloworld.Workflow, helloworld.Activity)
+	service.InitWorker(&c, helloworld.TaskName, helloworld.Workflow, helloworld.Activity)
 }

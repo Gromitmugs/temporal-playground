@@ -17,8 +17,7 @@ export POSTGRES_DEFAULT_PORT=5432
 export OPENSEARCH_VERSION=2.5.0
 
 .PHONY: up
-up:
-	make -C thirdparty docker-build
+up: docker-build-worker docker-build-thirdparty
 	docker compose up
 
 .PHONY: helloworld-worker
@@ -32,3 +31,15 @@ helloworld-starter:
 .PHONY: broadcast-starter
 broadcast-starter:
 	go run main.go broadcast
+
+
+APP_BIN := ./build/bin/worker
+.PHONY: build
+build:
+	go build -o $(APP_BIN)
+
+docker-build-worker: build
+	docker build -t temporal-worker -f ./build/dockerfile/Dockerfile-worker .
+
+docker-build-thirdparty:
+	make -C thirdparty docker-build

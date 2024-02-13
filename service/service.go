@@ -2,6 +2,7 @@ package service
 
 import (
 	"log"
+	"os"
 
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
@@ -13,7 +14,9 @@ type Workflow struct {
 }
 
 func GetTemporalClient() (client.Client, error) {
-	c, err := client.Dial(client.Options{})
+	c, err := client.Dial(client.Options{
+		HostPort: os.Getenv("TEMPORAL_ADDRESS"),
+	})
 	if err != nil {
 		log.Fatalln("Unable to create client", err)
 		return nil, err
@@ -21,7 +24,7 @@ func GetTemporalClient() (client.Client, error) {
 	return c, nil
 }
 
-func RegisterWorkflowAndActivity(c *client.Client, name string, workflow interface{}, activities ...interface{}) {
+func InitWorker(c *client.Client, name string, workflow interface{}, activities ...interface{}) {
 	w := worker.New(*c, name, worker.Options{})
 	w.RegisterWorkflow(workflow)
 	for _, activity := range activities {

@@ -85,6 +85,17 @@ services:
     restart: always
     networks:
       - temporal-network
+  temporal-broadcast-worker:
+    depends_on:
+      - temporal
+    container_name: temporal-broadcast-worker
+    image: temporal-worker
+    restart: always
+    command: ["/go/app/worker", "broadcast"]
+    networks:
+      - temporal-network
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
 networks:
   temporal-network:
     driver: bridge

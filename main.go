@@ -14,6 +14,7 @@ func main() {
 		please specify your operation through input arguments
 		go run main.go <operation_name>
 		`)
+		return
 	}
 	client, err := service.GetTemporalClient()
 	if err != nil {
@@ -25,7 +26,7 @@ func main() {
 	operation := os.Args[1]
 	switch operation {
 	case "broadcast":
-		service.RegisterWorkflowAndActivity(&client, "Broadcast", broadcast.Workflow.Definition, broadcast.Workflow.Activities...)
+		service.InitWorker(&client, broadcast.TaskQueueName, broadcast.Workflow.Definition, broadcast.Workflow.Activities...)
 	default:
 		fmt.Println("no operation found")
 		return
