@@ -3,6 +3,7 @@ package test
 import (
 	"context"
 	"fmt"
+	"os"
 	"testing"
 
 	"github.com/Gromitmugs/temporal-playground/job/builder"
@@ -14,9 +15,12 @@ func TestBuilder(t *testing.T) {
 	if err != nil {
 		fmt.Println(err.Error())
 		t.FailNow()
-
 	}
 	if err := builder.BuildImage(ctx, clonePath); err != nil {
+		fmt.Println(err.Error())
+		t.FailNow()
+	}
+	if err := os.RemoveAll(clonePath); err != nil {
 		fmt.Println(err.Error())
 		t.FailNow()
 	}

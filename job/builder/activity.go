@@ -1,8 +1,12 @@
 package builder
 
 import (
+	"bufio"
 	"context"
+	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
@@ -11,7 +15,7 @@ import (
 )
 
 func CloneRepo(ctx context.Context) (string, error) {
-	const clonePath = "/hello-world"
+	const clonePath = "cloned-repo"
 	_, err := git.PlainClone(clonePath, false, &git.CloneOptions{
 		URL: "https://github.com/Gromitmugs/hello-world-docker",
 	})
@@ -31,7 +35,7 @@ func BuildImage(ctx context.Context, clonePath string) error {
 		return err
 	}
 
-	dockerRegistryUserId := "Gromitmugs"
+	dockerRegistryUserId := "gromitmugs"
 	opts := types.ImageBuildOptions{
 		Dockerfile: "Dockerfile",
 		Tags:       []string{dockerRegistryUserId + clonePath},
@@ -41,12 +45,39 @@ func BuildImage(ctx context.Context, clonePath string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(res.Body)
-
 	defer res.Body.Close()
-	if err != nil {
-		return nil
+
+	// the program should process each line of the building command right until
+	// the execution ends, otherwise the program will exit before the execution finishes
+	scanner := bufio.NewScanner(res.Body)
+	for scanner.Scan() {
 	}
 
+	return nil
+}
+
+func printDockerResp(rd io.Reader) error {
+	var lastLine string
+	type ErrorLine struct {
+		Error       string `json:"error"`
+		ErrorDetail struct {
+			Message string `json:"message"`
+		} `json:"errorDetail"`
+	}
+	scanner := bufio.NewScanner(rd)
+	for scanner.Scan() {
+		lastLine = scanner.Text()
+		fmt.Println(scanner.Text())
+	}
+
+	errLine := &ErrorLine{}
+	json.Unmarshal([]byte(lastLine), errLine)
+	if errLine.Error != "" {
+		return errors.New(errLine.Error)
+	}
+
+	if err := scanner.Err(); err != nil {
+		return err
+	}
 	return nil
 }
