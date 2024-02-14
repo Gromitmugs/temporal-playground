@@ -34,7 +34,7 @@ APP_BIN := ./build/bin/worker
 .PHONY: build
 
 build: $(APP_BIN)
-$(APP_BIN): $(shell find job -type f) $(shell find service -type f) $(shell find thirdparty/client -type f) go.mod go.sum main.go
+$(APP_BIN): build/dockerfile/Dockerfile-worker $(shell find job -type f) $(shell find service -type f) $(shell find thirdparty/client -type f) go.mod go.sum main.go
 	go build -o $(APP_BIN)
 	docker build -t temporal-worker -f ./build/dockerfile/Dockerfile-worker .
 

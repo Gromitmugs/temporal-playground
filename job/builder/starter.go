@@ -1,4 +1,4 @@
-package broadcast
+package builder
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	temporalclient "go.temporal.io/sdk/client"
 )
 
-func Starter(message string) error {
+func Starter(repoUrl string) error {
 	client, err := service.GetTemporalClient()
 	if err != nil {
 		return err
@@ -20,7 +20,7 @@ func Starter(message string) error {
 		TaskQueue: TaskQueueName,
 	}
 
-	workflowRun, err := client.ExecuteWorkflow(context.Background(), startOpt, Workflow.Definition, message)
+	workflowRun, err := client.ExecuteWorkflow(context.Background(), startOpt, Workflow.Definition, repoUrl)
 	if err != nil {
 		return err
 	}

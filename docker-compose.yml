@@ -96,6 +96,23 @@ services:
       - temporal-network
     environment:
       - TEMPORAL_ADDRESS=temporal:7233
+  temporal-builder-worker:
+    depends_on:
+      - temporal
+    container_name: temporal-builder-worker
+    image: temporal-worker
+    restart: always
+    command: ["/go/app/worker", "builder"]
+    networks:
+      - temporal-network
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
+      - DOCKER_HOST=tcp://docker:2375
+  docker:
+    container_name: docker
+    image: docker:dind
+    networks:
+      - temporal-network
 networks:
   temporal-network:
     driver: bridge

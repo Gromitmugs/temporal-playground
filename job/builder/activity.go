@@ -5,8 +5,8 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
+	"os"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
@@ -14,70 +14,80 @@ import (
 	"github.com/go-git/go-git/v5"
 )
 
-func CloneRepo(ctx context.Context) (string, error) {
+const imageTag = "docker-image"
+
+func CloneRepo(ctx context.Context, url string) (string, error) {
 	const clonePath = "cloned-repo"
-	_, err := git.PlainClone(clonePath, false, &git.CloneOptions{
-		URL: "https://github.com/Gromitmugs/hello-world-docker",
-	})
-	if err != nil {
+	if _, err := git.PlainClone(clonePath, false, &git.CloneOptions{
+		URL: url,
+	}); err != nil {
 		return "", err
 	}
+
 	return clonePath, nil
 }
 
-func BuildImage(ctx context.Context, clonePath string) error {
+func RemoveClonedRepo(ctx context.Context, path string) error {
+	return os.RemoveAll(path)
+}
+
+func BuildImage(ctx context.Context, path string) (string, error) {
 	dockerClient, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
-		return err
+		return "", err
 	}
-	tar, err := archive.TarWithOptions(clonePath, &archive.TarOptions{})
+	tar, err := archive.TarWithOptions(path, &archive.TarOptions{})
 	if err != nil {
-		return err
+		return "", err
 	}
-
-	dockerRegistryUserId := "gromitmugs"
-	opts := types.ImageBuildOptions{
-		Dockerfile: "Dockerfile",
-		Tags:       []string{dockerRegistryUserId + clonePath},
-		Remove:     true,
-	}
-	res, err := dockerClient.ImageBuild(ctx, tar, opts)
+	res, err := dockerClient.ImageBuild(ctx,
+		tar,
+		types.ImageBuildOptions{
+			Dockerfile: "Dockerfile",
+			Tags:       []string{imageTag},
+			Remove:     true,
+		},
+	)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer res.Body.Close()
 
-	// the program should process each line of the building command right until
-	// the execution ends, otherwise the program will exit before the execution finishes
-	scanner := bufio.NewScanner(res.Body)
-	for scanner.Scan() {
-	}
-
-	return nil
+	return readResponseLog(res.Body)
 }
 
-func printDockerResp(rd io.Reader) error {
+func readResponseLog(rd io.Reader) (string, error) {
+	var log string
 	var lastLine string
-	type ErrorLine struct {
+
+	scanner := bufio.NewScanner(rd)
+	for scanner.Scan() {
+		log += scanner.Text()
+		lastLine = scanner.Text()
+	}
+	if err := scanner.Err(); err != nil {
+		return "", err
+	}
+
+	type errorLine struct {
 		Error       string `json:"error"`
 		ErrorDetail struct {
 			Message string `json:"message"`
 		} `json:"errorDetail"`
 	}
-	scanner := bufio.NewScanner(rd)
-	for scanner.Scan() {
-		lastLine = scanner.Text()
-		fmt.Println(scanner.Text())
-	}
 
-	errLine := &ErrorLine{}
+	errLine := &errorLine{}
 	json.Unmarshal([]byte(lastLine), errLine)
 	if errLine.Error != "" {
-		return errors.New(errLine.Error)
+		return "", errors.New(errLine.Error)
 	}
+	return log, nil
+}
 
-	if err := scanner.Err(); err != nil {
-		return err
+func buildWaitUntilFinish(res *types.ImageBuildResponse) {
+	// the program should process each line of the building command right until
+	// the execution ends, otherwise the program will exit before the execution finishes
+	scanner := bufio.NewScanner(res.Body)
+	for scanner.Scan() {
 	}
-	return nil
 }
