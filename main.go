@@ -6,6 +6,7 @@ import (
 
 	"github.com/Gromitmugs/temporal-playground/job/broadcast"
 	"github.com/Gromitmugs/temporal-playground/job/builder"
+	"github.com/Gromitmugs/temporal-playground/job/scheduler"
 	"github.com/Gromitmugs/temporal-playground/service"
 )
 
@@ -30,6 +31,8 @@ func main() {
 		service.InitWorker(&client, broadcast.TaskQueueName, broadcast.Workflow.Definition, broadcast.Workflow.Activities...)
 	case "builder":
 		service.InitWorker(&client, builder.TaskQueueName, builder.Workflow.Definition, builder.Workflow.Activities...)
+	case "scheduler":
+		service.InitWorker(&client, scheduler.TaskQueueName, scheduler.Workflow.Definition, scheduler.Workflow.Activities...)
 	default:
 		fmt.Println("no operation found")
 		return

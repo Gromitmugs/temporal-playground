@@ -96,6 +96,17 @@ services:
       - temporal-network
     environment:
       - TEMPORAL_ADDRESS=temporal:7233
+  temporal-scheduler-worker:
+    depends_on:
+      - temporal
+    container_name: temporal-scheduler-worker
+    image: temporal-worker
+    restart: always
+    command: ["/go/app/worker", "scheduler"]
+    networks:
+      - temporal-network
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
   temporal-builder-worker:
     depends_on:
       - temporal
