@@ -1,3 +1,7 @@
+.PHONY: g generate
+g generate:
+	make -C thirdparty g
+
 ### Docker Compose ###
 export COMPOSE_PROJECT_NAME=temporal
 export CASSANDRA_VERSION=3.11.9

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/Gromitmugs/temporal-playground/job/billing"
 	"github.com/Gromitmugs/temporal-playground/job/broadcast"
 	"github.com/Gromitmugs/temporal-playground/job/builder"
 	"github.com/Gromitmugs/temporal-playground/job/scheduler"
@@ -33,6 +34,8 @@ func main() {
 		service.InitWorker(&client, builder.TaskQueueName, builder.Workflow.Definition, builder.Workflow.Activities...)
 	case "scheduler":
 		service.InitWorker(&client, scheduler.TaskQueueName, scheduler.Workflow.Definition, scheduler.Workflow.Activities...)
+	case "billing":
+		service.InitWorker(&client, billing.TaskQueueName, billing.Workflow.Definition, billing.Workflow.Activities...)
 	default:
 		fmt.Println("no operation found")
 		return
