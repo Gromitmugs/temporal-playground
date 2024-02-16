@@ -1,0 +1,11 @@
+FROM gcr.io/kaniko-project/executor:v1.20.1 AS kaniko
+FROM golang:1.21.4
+
+COPY ./build/bin/worker /go/app/worker
+
+COPY --from=kaniko /bin/executor /bin/executor
+
+EXPOSE 8001
+
+# override kaniko's entrypoint
+ENTRYPOINT []

@@ -122,7 +122,7 @@ services:
     depends_on:
       - temporal
     container_name: temporal-builder-worker
-    image: temporal-worker
+    image: temporal-builder-worker
     restart: always
     command: ["/go/app/worker", "builder"]
     networks:

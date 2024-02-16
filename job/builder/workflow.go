@@ -12,7 +12,7 @@ var Workflow *service.Workflow = &service.Workflow{
 	Definition: BuilderWorkflow,
 	Activities: []interface{}{
 		CloneRepo,
-		BuildImage,
+		DockerBuildImage,
 		RemoveClonedRepo,
 	},
 }
@@ -37,7 +37,7 @@ func BuilderWorkflow(ctx workflow.Context, broadcastMsg string) (string, error) 
 	}
 
 	var buildImageLog client.MessageCreateResult
-	err = workflow.ExecuteActivity(ctx, BuildImage, broadcastMsg).Get(ctx, &buildImageLog)
+	err = workflow.ExecuteActivity(ctx, DockerBuildImage, broadcastMsg).Get(ctx, &buildImageLog)
 	if err != nil {
 		logger.Error("Activity failed.", "Error", err)
 		return "", err

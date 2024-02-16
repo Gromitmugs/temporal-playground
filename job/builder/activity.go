@@ -31,7 +31,7 @@ func RemoveClonedRepo(ctx context.Context, path string) error {
 	return os.RemoveAll(path)
 }
 
-func BuildImage(ctx context.Context, path string) (string, error) {
+func DockerBuildImage(ctx context.Context, path string) (string, error) {
 	dockerClient, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return "", err
