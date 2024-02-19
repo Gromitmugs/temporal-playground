@@ -38,10 +38,10 @@ APP_BIN := ./build/bin/worker
 .PHONY: build
 
 build: $(APP_BIN)
-$(APP_BIN): build/dockerfile/Dockerfile-worker $(shell find job -type f) $(shell find service -type f) $(shell find thirdparty/client -type f) go.mod go.sum main.go
+$(APP_BIN): $(shell find build/dockerfile -type f) $(shell find job -type f) $(shell find service -type f) $(shell find thirdparty/client -type f) go.mod go.sum main.go
 	go build -o $(APP_BIN)
 	docker build -t temporal-worker -f ./build/dockerfile/Dockerfile-worker .
-	docker build -t temporal-builder-worker -f ./build/dockerfile/Dockerfile-builder .
+	docker build -t temporal-builder-worker -f ./build/dockerfile/Dockerfile-builder --target kaniko .
 
 build-thirdparty:
 	make -C thirdparty build

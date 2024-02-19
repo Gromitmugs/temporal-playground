@@ -2,11 +2,13 @@ package builder
 
 import (
 	"bufio"
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"io"
 	"os"
+	"os/exec"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
@@ -54,6 +56,17 @@ func DockerBuildImage(ctx context.Context, path string) (string, error) {
 	defer res.Body.Close()
 
 	return readResponseLog(res.Body)
+}
+
+func KanikoBuildImage(ctx context.Context, path string) (string, error) {
+	executorCmd := exec.Command("/kaniko/executor")
+	var result bytes.Buffer
+
+	executorCmd.Stdout = &result
+	if err := executorCmd.Run(); err != nil {
+		return "", err
+	}
+	return result.String(), nil
 }
 
 func readResponseLog(rd io.Reader) (string, error) {

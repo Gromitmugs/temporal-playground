@@ -1,9 +1,13 @@
-FROM gcr.io/kaniko-project/executor:v1.20.1 AS kaniko
-FROM golang:1.21.4
-
+FROM golang:1.21.4 AS builder
+WORKDIR /go/app
 COPY ./build/bin/worker /go/app/worker
 
-COPY --from=kaniko /bin/executor /bin/executor
+
+FROM gcr.io/kaniko-project/executor:v1.20.1 AS kaniko
+COPY --from=builder /go/app/worker /go/app/worker
+
+# COPY --from=go /bin/bash /bin/bash
+# COPY --from=go /bin/ls /bin/ls
 
 EXPOSE 8001
 
