@@ -14,12 +14,13 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/archive"
 	"github.com/go-git/go-git/v5"
+	"github.com/google/uuid"
 )
 
 const imageTag = "docker-image"
 
 func CloneRepo(ctx context.Context, url string) (string, error) {
-	const clonePath = "cloned-repo"
+	clonePath := uuid.NewString()
 	if _, err := git.PlainClone(clonePath, false, &git.CloneOptions{
 		URL: url,
 	}); err != nil {

@@ -37,11 +37,13 @@ broadcast-starter:
 APP_BIN := ./build/bin/worker
 .PHONY: build
 
+# go binary supports scratch base image (kaniko)
+export CGO_ENABLED=0
 build: $(APP_BIN)
 $(APP_BIN): $(shell find build/dockerfile -type f) $(shell find job -type f) $(shell find service -type f) $(shell find thirdparty/client -type f) go.mod go.sum main.go
 	go build -o $(APP_BIN)
 	docker build -t temporal-worker -f ./build/dockerfile/Dockerfile-worker .
-	docker build -t temporal-builder-worker -f ./build/dockerfile/Dockerfile-builder --target kaniko .
+	docker build -t temporal-builder-worker -f ./build/dockerfile/Dockerfile-builder .
 
 build-thirdparty:
 	make -C thirdparty build
