@@ -1,7 +1,9 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"io/ioutil"
 	"os"
 
 	"github.com/Gromitmugs/temporal-playground/job/billing"
@@ -19,6 +21,10 @@ func main() {
 		`)
 		return
 	}
+
+	operation := os.Args[1]
+	debugTools(operation)
+
 	client, err := service.GetTemporalClient()
 	if err != nil {
 		fmt.Println(err)
@@ -26,7 +32,6 @@ func main() {
 	}
 	defer client.Close()
 
-	operation := os.Args[1]
 	switch operation {
 	case "broadcast":
 		service.InitWorker(&client, broadcast.TaskQueueName, broadcast.Workflow.Definition, broadcast.Workflow.Activities...)
@@ -40,5 +45,30 @@ func main() {
 		fmt.Println("no operation found")
 		return
 	}
+}
 
+func debugTools(operation string) {
+	switch operation {
+	case "kaniko":
+		builder.TestCloneAndBuild()
+		os.Exit(0)
+	case "clone":
+		clonedPath, err := builder.CloneRepo(context.TODO(), "https://github.com/Gromitmugs/hello-world-docker")
+		fmt.Println(err.Error())
+		fmt.Println(clonedPath)
+		os.Exit(0)
+	case "ls":
+		if len(os.Args) < 3 {
+			fmt.Println("Please specify a path for ls command")
+			os.Exit(0)
+		}
+		fileInfos, err := ioutil.ReadDir(os.Args[2])
+		if err != nil {
+			fmt.Println("Error in accessing directory:", err)
+		}
+		for _, file := range fileInfos {
+			fmt.Println(file.Name())
+		}
+		os.Exit(0)
+	}
 }

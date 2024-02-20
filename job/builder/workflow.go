@@ -4,40 +4,30 @@ import (
 	"time"
 
 	"github.com/Gromitmugs/temporal-playground/service"
-	"github.com/Gromitmugs/temporal-playground/thirdparty/client"
 	"go.temporal.io/sdk/workflow"
 )
 
 var Workflow *service.Workflow = &service.Workflow{
 	Definition: BuilderWorkflow,
 	Activities: []interface{}{
-		CloneRepo,
-		KanikoBuildImage,
-		RemoveClonedRepo,
+		KanikoCloneAndBuildImage,
 	},
 }
 
 func BuilderWorkflow(ctx workflow.Context, broadcastMsg string) (string, error) {
 	opt := workflow.ActivityOptions{
-		ScheduleToCloseTimeout: 10 * time.Second,
+		ScheduleToCloseTimeout: time.Minute * 10,
+		ScheduleToStartTimeout: time.Minute * 5,
 	}
 	ctx = workflow.WithActivityOptions(ctx, opt)
 	logger := workflow.GetLogger(ctx)
 
-	var clonePath string
-	err := workflow.ExecuteActivity(ctx, CloneRepo, broadcastMsg).Get(ctx, &clonePath)
-	if err != nil {
-		logger.Error("Activity failed.", "Error", err)
-		return "", err
-	}
-	defer workflow.ExecuteActivity(ctx, RemoveClonedRepo, clonePath).Get(ctx, nil)
-
-	var buildImageLog client.MessageCreateResult
-	err = workflow.ExecuteActivity(ctx, KanikoBuildImage, broadcastMsg).Get(ctx, &buildImageLog)
+	var result string
+	err := workflow.ExecuteActivity(ctx, KanikoCloneAndBuildImage, broadcastMsg).Get(ctx, &result)
 	if err != nil {
 		logger.Error("Activity failed.", "Error", err)
 		return "", err
 	}
 
-	return "Successfully build and clone the repository", nil
+	return "Successfully build the repository", nil
 }

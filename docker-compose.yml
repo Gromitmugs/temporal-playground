@@ -130,11 +130,17 @@ services:
     environment:
       - TEMPORAL_ADDRESS=temporal:7233
       - DOCKER_HOST=tcp://docker:2375
-  docker:
-    container_name: docker
-    image: docker:dind
+  registry:
+    container_name: registry
     networks:
       - temporal-network
+    restart: always
+    image: registry
+    ports:
+      - 5000:5000
+    volumes:
+      - ./dynamicconfig/registry.yml:/etc/docker/registry/config.yml:ro
+      - ./registry-data:/var/lib/registry:rw
 networks:
   temporal-network:
     driver: bridge

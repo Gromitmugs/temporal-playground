@@ -6,9 +6,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"os/exec"
+	"path"
+	"strings"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
@@ -20,7 +23,7 @@ import (
 const imageTag = "docker-image"
 
 func CloneRepo(ctx context.Context, url string) (string, error) {
-	clonePath := uuid.NewString()
+	clonePath := fmt.Sprint("/", uuid.NewString())
 	if _, err := git.PlainClone(clonePath, false, &git.CloneOptions{
 		URL: url,
 	}); err != nil {
@@ -59,12 +62,24 @@ func DockerBuildImage(ctx context.Context, path string) (string, error) {
 	return readResponseLog(res.Body)
 }
 
-func KanikoBuildImage(ctx context.Context, path string) (string, error) {
-	executorCmd := exec.Command("/kaniko/executor")
+func KanikoCloneAndBuildImage(ctx context.Context, url string) (string, error) {
+	imageTag := uuid.NewString()
+	context := strings.Replace(url, "https://", "git://", 1)
+	cmd := exec.Command(
+		"executor",
+		"--dockerfile", "Dockerfile",
+		"--destination", path.Join("registry:5000", imageTag),
+		"--context", context,
+		"--insecure",
+		"--skip-tls-verify",
+	)
+
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
 	var result bytes.Buffer
 
-	executorCmd.Stdout = &result
-	if err := executorCmd.Run(); err != nil {
+	if err := cmd.Run(); err != nil {
 		return "", err
 	}
 	return result.String(), nil
@@ -104,4 +119,14 @@ func buildWaitUntilFinish(res *types.ImageBuildResponse) {
 	scanner := bufio.NewScanner(res.Body)
 	for scanner.Scan() {
 	}
+}
+
+func TestCloneAndBuild() {
+	ctx := context.Background()
+	result, err := KanikoCloneAndBuildImage(ctx, "https://github.com/Gromitmugs/hello-world-docker")
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	fmt.Println(result)
 }
