@@ -1,0 +1,16 @@
+FROM bitnami/git as hello-world-git
+
+RUN git clone https://github.com/Gromitmugs/hello-world-kaniko.git /hello-world
+
+FROM gcr.io/kaniko-project/executor:v1.20.1
+
+WORKDIR /go/app
+
+COPY ./build/bin/worker /go/app/worker
+
+COPY --from=hello-world-git /hello-world /hello-world
+
+EXPOSE 8001
+
+# override kaniko's entrypoint
+ENTRYPOINT []

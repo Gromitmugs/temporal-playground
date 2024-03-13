@@ -1,1 +1,6 @@
-/dynamicconfig
+*.generated.go
+*gen.go
+*generated*
+thirdparty/bin/*
+build/bin/*
+registry-data/*

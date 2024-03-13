@@ -1,15 +1,22 @@
 package broadcast
 
 import (
-	"context"
-	"fmt"
 	"time"
 
-	"go.temporal.io/sdk/activity"
+	"github.com/Gromitmugs/temporal-playground/service"
+	"github.com/Gromitmugs/temporal-playground/thirdparty/client"
 	"go.temporal.io/sdk/workflow"
 )
 
-func Workflow(ctx workflow.Context, broadcastMsg string) (string, error) {
+var Workflow *service.Workflow = &service.Workflow{
+	Definition: BroadcastWorkflow,
+	Activities: []interface{}{
+		BroadcastMessage,
+		RecordMessage,
+	},
+}
+
+func BroadcastWorkflow(ctx workflow.Context, broadcastMsg string) (string, error) {
 	opt := workflow.ActivityOptions{
 		ScheduleToCloseTimeout: 10 * time.Second,
 	}
@@ -19,7 +26,13 @@ func Workflow(ctx workflow.Context, broadcastMsg string) (string, error) {
 	logger.Info("Broadcast workflow started")
 
 	var result string
-	err := workflow.ExecuteActivity(ctx, Activity, broadcastMsg).Get(ctx, &result)
+	err := workflow.ExecuteActivity(ctx, BroadcastMessage, broadcastMsg).Get(ctx, &result)
+	if err != nil {
+		logger.Error("Activity failed.", "Error", err)
+		return "", err
+	}
+	var recordMessageResult client.MessageCreateResult
+	err = workflow.ExecuteActivity(ctx, RecordMessage, broadcastMsg).Get(ctx, &recordMessageResult)
 	if err != nil {
 		logger.Error("Activity failed.", "Error", err)
 		return "", err
@@ -27,10 +40,4 @@ func Workflow(ctx workflow.Context, broadcastMsg string) (string, error) {
 
 	logger.Info("Broadcast workflow completed.", "result", result)
 	return result, nil
-}
-
-func Activity(ctx context.Context, broadcastMsg string) (string, error) {
-	logger := activity.GetLogger(ctx)
-	logger.Info("Activity", "Broadcast Activity Started")
-	return fmt.Sprint("Broadcast Message:", broadcastMsg), nil
 }

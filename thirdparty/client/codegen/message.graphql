@@ -1,0 +1,10 @@
+mutation MessageCreate($content: String!) {
+  messageCreate(content: $content) {
+    id
+    content
+  }
+}
+
+mutation ErrorCreate($errMsg: String!) {
+  errorCreate(errMsg: $errMsg)
+}
